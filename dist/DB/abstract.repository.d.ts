@@ -1,4 +1,4 @@
-import { Model, MongooseBaseQueryOptions, ProjectionType, QueryOptions, RootFilterQuery } from "mongoose";
+import { Model, MongooseBaseQueryOptions, ProjectionType, QueryOptions, RootFilterQuery, UpdateQuery } from "mongoose";
 export declare abstract class AbstractRepository<T> {
     protected model: Model<T>;
     constructor(model: Model<T>);
@@ -23,7 +23,7 @@ export declare abstract class AbstractRepository<T> {
     } ? T_1 : T_1 & {
         __v: number;
     } : never : never)> | null>;
-    updated(filter: RootFilterQuery<T>, item: Partial<T>, options?: any): Promise<void>;
+    updated(filter: RootFilterQuery<T>, item: UpdateQuery<T>, options?: any): Promise<void>;
     delete(filter: RootFilterQuery<T>, options: MongooseBaseQueryOptions<T>): Promise<void>;
 }
 //# sourceMappingURL=abstract.repository.d.ts.map

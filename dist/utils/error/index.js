@@ -1,42 +1,53 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NotFoundError = exports.BadRequestError = exports.AuthorityError = exports.ConflictError = void 0;
+exports.NotFoundError = exports.BadRequestError = exports.AuthorityError = exports.ConflictError = exports.AppError = void 0;
 class AppError extends Error {
     statusCode;
-    constructor(message, statusCode) {
+    errorDetails;
+    constructor(message, statusCode, errorDetails) {
         super(message);
         this.statusCode = statusCode;
+        this.errorDetails = errorDetails;
     }
 }
+exports.AppError = AppError;
 class ConflictError extends AppError {
     message;
-    constructor(message) {
-        super(message, 409);
+    errorDetails;
+    constructor(message, errorDetails) {
+        super(message, 409, errorDetails);
         this.message = message;
+        this.errorDetails = errorDetails;
     }
 }
 exports.ConflictError = ConflictError;
 class AuthorityError extends AppError {
     message;
-    constructor(message) {
-        super(message, 401);
+    errorDetails;
+    constructor(message, errorDetails) {
+        super(message, 401, errorDetails);
         this.message = message;
+        this.errorDetails = errorDetails;
     }
 }
 exports.AuthorityError = AuthorityError;
 class BadRequestError extends AppError {
     message;
-    constructor(message) {
-        super(message, 400);
+    errorDetails;
+    constructor(message, errorDetails) {
+        super(message, 400, errorDetails);
         this.message = message;
+        this.errorDetails = errorDetails;
     }
 }
 exports.BadRequestError = BadRequestError;
 class NotFoundError extends AppError {
     message;
-    constructor(message) {
-        super(message, 404);
+    errorDetails;
+    constructor(message, errorDetails) {
+        super(message, 404, errorDetails);
         this.message = message;
+        this.errorDetails = errorDetails;
     }
 }
 exports.NotFoundError = NotFoundError;

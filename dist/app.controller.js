@@ -13,7 +13,10 @@ function bootstrap(app, express) {
         if (!error) {
             next();
         }
-        res.status(error.statusCode).json({ message: error.message });
+        res.status(error.statusCode).json({ message: error.message, errorDetails: error.errorDetails });
+    });
+    app.use("/:dummy", (req, res, next) => {
+        res.status(404).json({ message: "invalid url" });
     });
     (0, connection_1.connectDB)();
 }

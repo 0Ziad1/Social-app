@@ -7,7 +7,7 @@ import { AuthFactoryService } from "../../model/user/factory";
 import { sendEmail } from "../../utils/mailer";
 import { generateExpiryDate, generateOtp } from "../../utils/otp";
 import { comparePassword } from "../../utils/hashing";
-
+import *as authValidation from "./auth.validatation"
 
 class UserService {
     private userRepository = new UserRepository()
@@ -16,6 +16,15 @@ class UserService {
     }
     register = async (req: Request, res: Response, next: NextFunction) => {
         const registerDTO: RegisterDTO = req.body;
+        const result = authValidation.registerSchema.safeParse(registerDTO);
+        if(result.success==false){
+        const errorMessage = result.error.issues.map((issue)=>({
+            path:issue.path[0],
+            message:issue.message }))
+            console.log(errorMessage);
+            throw new BadRequestError("Validation error",errorMessage)
+        }
+        
         const userExistance = await this.userRepository.exist({ email: registerDTO.email });
         if (userExistance) {
             throw new ConflictError("User already Exist");
@@ -60,21 +69,22 @@ class UserService {
 
     verifyAccount = async (req: Request, res: Response, next: NextFunction) => {
         const verifyAccountDTO: verifyAccountDTO = req.body;
-        const userExistance = await this.userRepository.exist({ email: verifyAccountDTO.email },{});
+        const userExistance = await this.userRepository.exist({ email: verifyAccountDTO.email }, {});
         if (!userExistance) {
             throw new NotFoundError("email not found");
         }
-        if(userExistance.otp != verifyAccountDTO.otp)
-        {
+        if (userExistance.otp != verifyAccountDTO.otp) {
             throw new BadRequestError("wrong otp");
         }
-        if(userExistance.otpExpiryDate as any < Date.now())
-        {
+        if (userExistance.otpExpiryDate as any < Date.now()) {
             throw new BadRequestError("otp expired");
         }
-        this.userRepository.updated({_id:userExistance._id},{isVerified:true})
+        this.userRepository.updated({ _id: userExistance._id }, {
+            isVerified: true,
+            $unset: { otp: 1, otpExpiryDate: 1 }
+        })
         await userExistance.save()
-        res.status(200).json({message:"account verified successfully"})
+        res.status(200).json({ message: "account verified successfully" })
     }
 }
 export default new UserService();
