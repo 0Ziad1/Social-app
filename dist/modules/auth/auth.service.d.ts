@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-declare class UserService {
+declare class AuthService {
     private userRepository;
     private authRepository;
     constructor();
@@ -8,6 +8,6 @@ declare class UserService {
     login: (req: Request, res: Response, next: NextFunction) => Promise<void>;
     verifyAccount: (req: Request, res: Response, next: NextFunction) => Promise<void>;
 }
-declare const _default: UserService;
+declare const _default: AuthService;
 export default _default;
 //# sourceMappingURL=auth.service.d.ts.map

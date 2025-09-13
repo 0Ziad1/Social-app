@@ -6,9 +6,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.bootstrap = bootstrap;
 const auth_controller_1 = __importDefault(require("./modules/auth/auth.controller"));
 const connection_1 = require("./DB/connection");
+const user_controller_1 = __importDefault(require("./modules/user/user.controller"));
 function bootstrap(app, express) {
     app.use(express.json());
     app.use("/auth", auth_controller_1.default);
+    app.use("/user", user_controller_1.default);
     app.use((error, req, res, next) => {
         if (!error) {
             next();

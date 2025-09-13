@@ -6,10 +6,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.hashing = hashing;
 exports.comparePassword = comparePassword;
 const bcrypt_1 = __importDefault(require("bcrypt"));
-function hashing(password) {
-    return bcrypt_1.default.hashSync(password, 10);
+async function hashing(password) {
+    return await bcrypt_1.default.hash(password, 10);
 }
-function comparePassword(password, hashedPassword) {
-    return bcrypt_1.default.compareSync(password, hashedPassword);
+async function comparePassword(password, hashedPassword) {
+    return await bcrypt_1.default.compare(password, hashedPassword);
 }
 //# sourceMappingURL=index.js.map

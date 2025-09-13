@@ -1,7 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 declare class UserService {
+    private userRepo;
     constructor();
-    register(req: Request, res: Response, next: NextFunction): void;
+    getProfile: (req: Request, res: Response, next: NextFunction) => Promise<void>;
 }
-export default UserService;
+declare const _default: UserService;
+export default _default;
 //# sourceMappingURL=user.service.d.ts.map

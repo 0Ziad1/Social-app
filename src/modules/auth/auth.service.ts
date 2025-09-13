@@ -2,29 +2,20 @@ import { NextFunction, Request, Response } from "express";
 import { LoginDTO, RegisterDTO, ResendOtpDTO, verifyAccountDTO } from "./auth.dto";
 import User from "../../model/user/user.model";
 import { AuthorityError, BadRequestError, ConflictError, NotFoundError } from "../../utils/error";
-import { UserRepository } from "../../model/user/user.repository";
-import { AuthFactoryService } from "../../model/user/factory";
+import { UserRepository } from "../../model/user";
+import { AuthFactoryService } from "../../model/user";
 import { sendEmail } from "../../utils/mailer";
 import { generateExpiryDate, generateOtp } from "../../utils/otp";
 import { comparePassword } from "../../utils/hashing";
-import *as authValidation from "./auth.validatation"
+import *as authValidation from "./auth.validation"
 
-class UserService {
+class AuthService {
     private userRepository = new UserRepository()
     private authRepository = new AuthFactoryService();
     constructor() {
     }
     register = async (req: Request, res: Response, next: NextFunction) => {
         const registerDTO: RegisterDTO = req.body;
-        const result = authValidation.registerSchema.safeParse(registerDTO);
-        if(result.success==false){
-        const errorMessage = result.error.issues.map((issue)=>({
-            path:issue.path[0],
-            message:issue.message }))
-            console.log(errorMessage);
-            throw new BadRequestError("Validation error",errorMessage)
-        }
-        
         const userExistance = await this.userRepository.exist({ email: registerDTO.email });
         if (userExistance) {
             throw new ConflictError("User already Exist");
@@ -57,7 +48,7 @@ class UserService {
         if (!userExistance) {
             throw new NotFoundError("email not found");
         }
-        const match = comparePassword(loginDTO.password, userExistance.password);
+        const match = await comparePassword(loginDTO.password, userExistance.password);
         if (!match) {
             throw new AuthorityError("invalid credintials");
         }
@@ -87,4 +78,4 @@ class UserService {
         res.status(200).json({ message: "account verified successfully" })
     }
 }
-export default new UserService();
+export default new AuthService();

@@ -5,7 +5,7 @@ import { generateExpiryDate, generateOtp } from "../../../utils/otp";
 import { User } from "../entity";
 
 export class AuthFactoryService{
-    register(registerDTO:RegisterDTO){
+    async register(registerDTO:RegisterDTO){
         const user = new User();
         user.firstName=registerDTO.firstName;
         user.lastName =registerDTO.lastName;
@@ -17,7 +17,7 @@ export class AuthFactoryService{
         user.role = SYS_ROLES.user;
         user.otp = generateOtp() as unknown as string ;
         user.otpExpiryDate = generateExpiryDate(15*60*1000)
-        user.password = hashing(registerDTO.password);
+        user.password =await  hashing(registerDTO.password);
         user.isVerified = false;
         return user;
     }
