@@ -2,10 +2,11 @@ import express from "express";
 import { config } from "dotenv"
 import { log } from "console";
 import { bootstrap } from "./app.controller";
-config({ path: "./config/dev.env" })
+import { devConfig } from "./config/dev.env";
+config()
 const app = express();
-const port = process.env.PORT
+const port = devConfig.PORT
 app.listen(port, () => {
-    log("application is running on port", port);
+    log("application is running on port", port); 
 });
 bootstrap(app,express)

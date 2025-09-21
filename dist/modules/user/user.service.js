@@ -11,10 +11,11 @@ class UserService {
         if (!user) {
             throw new error_1.NotFoundError("User not found");
         }
+        req.user = user;
         res
             .status(200)
             .json({
-            message: "done successfully", success: true, data: user
+            message: "done successfully", success: true, data: req.user
         });
     };
 }

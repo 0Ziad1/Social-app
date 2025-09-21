@@ -1,8 +1,10 @@
 import { Schema } from "mongoose";
 import { IUser } from "../../utils/interface";
 import { GENDER, SYS_ROLES, USER_AGENT } from "../../utils/enum";
+import { devConfig } from "../../config/dev.env";
+import { sendEmail } from "../../utils/mailer";
 const schema = new Schema<IUser>({
-       isVerified: {
+    isVerified: {
         type: Boolean,
         default: false
     },
@@ -69,5 +71,15 @@ const schema = new Schema<IUser>({
 }, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } })
 schema.virtual("fullName").set(function () {
     return this.firstName + " " + this.lastName;
+})
+schema.pre("save",{document:true,query:false} ,async function () {
+  if (this.isNew == true  && this.userAgent != USER_AGENT.google) {
+    await sendEmail({
+      from: `'social-app' <${devConfig.EMAIL}>`,
+      to: this.email as string,
+      subject: "Verify your account",
+      html: `<h1>Your OTP is ${this.otp}</h1>`,
+    });
+  }
 })
 export default schema;

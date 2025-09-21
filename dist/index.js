@@ -7,9 +7,10 @@ const express_1 = __importDefault(require("express"));
 const dotenv_1 = require("dotenv");
 const console_1 = require("console");
 const app_controller_1 = require("./app.controller");
-(0, dotenv_1.config)({ path: "./config/dev.env" });
+const dev_env_1 = require("./config/dev.env");
+(0, dotenv_1.config)();
 const app = (0, express_1.default)();
-const port = process.env.PORT;
+const port = dev_env_1.devConfig.PORT;
 app.listen(port, () => {
     (0, console_1.log)("application is running on port", port);
 });

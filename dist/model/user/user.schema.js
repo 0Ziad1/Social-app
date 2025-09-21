@@ -2,6 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
 const enum_1 = require("../../utils/enum");
+const dev_env_1 = require("../../config/dev.env");
+const mailer_1 = require("../../utils/mailer");
 const schema = new mongoose_1.Schema({
     isVerified: {
         type: Boolean,
@@ -69,6 +71,16 @@ const schema = new mongoose_1.Schema({
 }, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
 schema.virtual("fullName").set(function () {
     return this.firstName + " " + this.lastName;
+});
+schema.pre("save", { document: true, query: false }, async function () {
+    if (this.isNew == true && this.userAgent != enum_1.USER_AGENT.google) {
+        await (0, mailer_1.sendEmail)({
+            from: `'social-app' <${dev_env_1.devConfig.EMAIL}>`,
+            to: this.email,
+            subject: "Verify your account",
+            html: `<h1>Your OTP is ${this.otp}</h1>`,
+        });
+    }
 });
 exports.default = schema;
 //# sourceMappingURL=user.schema.js.map

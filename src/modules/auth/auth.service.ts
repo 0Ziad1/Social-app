@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { LoginDTO, RegisterDTO, ResendOtpDTO, verifyAccountDTO } from "./auth.dto";
+import { LoginDTO, RegisterDTO, ResendOtpDTO, VerifyAccountDTO } from "./auth.dto";
 import User from "../../model/user/user.model";
 import { AuthorityError, BadRequestError, ConflictError, NotFoundError } from "../../utils/error";
 import { UserRepository } from "../../model/user";
@@ -8,6 +8,8 @@ import { sendEmail } from "../../utils/mailer";
 import { generateExpiryDate, generateOtp } from "../../utils/otp";
 import { comparePassword } from "../../utils/hashing";
 import *as authValidation from "./auth.validation"
+import { devConfig } from "../../config/dev.env";
+import { authProvider } from "./providers/auth.provider";
 
 class AuthService {
     private userRepository = new UserRepository()
@@ -22,7 +24,6 @@ class AuthService {
         }
         const user = await this.authRepository.register(registerDTO);
         const createdUser = await this.userRepository.create(user);
-        await sendEmail(user.email, "verify your account", `<p>your otp is ${user.otp}</p>`);
         res.
             status(200).
             json({ message: "User created successfully", success: true, data: createdUser });
@@ -38,7 +39,12 @@ class AuthService {
         userExistance.otp = otp as unknown as string;
         userExistance.otpExpiryDate = otpExpiryDate;
         await userExistance.save()
-        await sendEmail(userExistance.email, "verify your account", `<p>your otp is ${userExistance.otp}</p>`);
+        await sendEmail({
+            from: `'social-app' <${devConfig.EMAIL}>`,
+            to: userExistance.email,
+            subject: "verify your account",
+            html: `<h1>your otp is ${userExistance.otp}</h1>`
+        });
         res.status(200).json({ message: "otp resent successfully" });
     }
 
@@ -59,23 +65,14 @@ class AuthService {
     }
 
     verifyAccount = async (req: Request, res: Response, next: NextFunction) => {
-        const verifyAccountDTO: verifyAccountDTO = req.body;
-        const userExistance = await this.userRepository.exist({ email: verifyAccountDTO.email }, {});
-        if (!userExistance) {
-            throw new NotFoundError("email not found");
-        }
-        if (userExistance.otp != verifyAccountDTO.otp) {
-            throw new BadRequestError("wrong otp");
-        }
-        if (userExistance.otpExpiryDate as any < Date.now()) {
-            throw new BadRequestError("otp expired");
-        }
+        const verifyAccountDTO: VerifyAccountDTO = req.body;
+        const userExistance = await authProvider.checkOTP(verifyAccountDTO);
         this.userRepository.updated({ _id: userExistance._id }, {
             isVerified: true,
             $unset: { otp: 1, otpExpiryDate: 1 }
         })
         await userExistance.save()
-        res.status(200).json({ message: "account verified successfully" })
+        res.sendStatus(204);
     }
 }
 export default new AuthService();
