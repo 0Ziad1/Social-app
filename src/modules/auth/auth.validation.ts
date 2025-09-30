@@ -1,6 +1,6 @@
 import {z} from "zod"
 import { RegisterDTO } from "./auth.dto"
-import { GENDER } from "../../utils/enum"
+import { GENDER } from "../../utils/common/enum"
 export const registerSchema = z.object<RegisterDTO>({
  firstName:z.string().min(3).max(20).trim() as unknown as string,
  lastName:z.string().min(3).max(20).trim() as unknown as string,

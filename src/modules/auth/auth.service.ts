@@ -10,6 +10,8 @@ import { comparePassword } from "../../utils/hashing";
 import *as authValidation from "./auth.validation"
 import { devConfig } from "../../config/dev.env";
 import { authProvider } from "./providers/auth.provider";
+import { generateToken } from "../../utils/token";
+import { email } from "zod";
 
 class AuthService {
     private userRepository = new UserRepository()
@@ -48,7 +50,7 @@ class AuthService {
         res.status(200).json({ message: "otp resent successfully" });
     }
 
-    login = async (req: Request, res: Response, next: NextFunction) => {
+    login = async (req: Request, res: Response) => {
         const loginDTO: LoginDTO = req.body;
         const userExistance = await this.userRepository.exist({ email: loginDTO.email });
         if (!userExistance) {
@@ -61,10 +63,11 @@ class AuthService {
         if (userExistance.isVerified == false) {
             throw new BadRequestError("verify your account first")
         }
-        res.status(200).json({ message: "logged in successfully" });
+       const accessToken =  generateToken({ id: userExistance._id,role:userExistance.role },undefined,{expiresIn:15*60*1000});
+        res.status(200).json({ message: "logged in successfully",data:accessToken });
     }
 
-    verifyAccount = async (req: Request, res: Response, next: NextFunction) => {
+    verifyAccount = async (req: Request, res: Response) => {
         const verifyAccountDTO: VerifyAccountDTO = req.body;
         const userExistance = await authProvider.checkOTP(verifyAccountDTO);
         this.userRepository.updated({ _id: userExistance._id }, {

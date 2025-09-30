@@ -1,6 +1,6 @@
 export * from "./user.schema";
 export * from "./user.repository";
 export * from "./user.model";
-export * from "./factory/index";
-export * from "./entity/index";
+export * from "../../modules/user/factory/index";
+export * from "../../modules/user/entity/index";
 //# sourceMappingURL=index.d.ts.map

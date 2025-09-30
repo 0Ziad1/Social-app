@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { GENDER } from "../../utils/enum";
+import { GENDER } from "../../utils/common/enum";
 export declare const registerSchema: z.ZodObject<{
     firstName: string;
     lastName: string;

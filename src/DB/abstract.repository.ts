@@ -1,7 +1,7 @@
 import { Model, MongooseBaseQueryOptions, MongooseUpdateQueryOptions, ProjectionType, QueryOptions, RootFilterQuery, UpdateQuery } from "mongoose";
 export abstract class AbstractRepository<T> {
     constructor(protected model: Model<T>) { }
-    async create(item:T){
+    async create(item:T) {
        const document = await this.model.create(item);
        return await document.save();
     }

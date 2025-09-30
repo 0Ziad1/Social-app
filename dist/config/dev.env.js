@@ -8,5 +8,6 @@ exports.devConfig = {
     DB_URL: process.env.DB_URL,
     EMAIL: process.env.EMAIL,
     PASS: process.env.PASS,
+    SECRET_KEY: process.env.SECRET_Key,
 };
 //# sourceMappingURL=dev.env.js.map

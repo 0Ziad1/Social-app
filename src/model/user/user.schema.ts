@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
-import { IUser } from "../../utils/interface";
-import { GENDER, SYS_ROLES, USER_AGENT } from "../../utils/enum";
+import { IUser } from "../../utils/common/interface";
+import { GENDER, SYS_ROLES, USER_AGENT } from "../../utils/common/enum";
 import { devConfig } from "../../config/dev.env";
 import { sendEmail } from "../../utils/mailer";
 const schema = new Schema<IUser>({
@@ -69,7 +69,7 @@ const schema = new Schema<IUser>({
     },
 
 }, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } })
-schema.virtual("fullName").set(function () {
+schema.virtual("fullName").get(function () {
     return this.firstName + " " + this.lastName;
 })
 schema.pre("save",{document:true,query:false} ,async function () {

@@ -17,6 +17,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./user.schema"), exports);
 __exportStar(require("./user.repository"), exports);
 __exportStar(require("./user.model"), exports);
-__exportStar(require("./factory/index"), exports);
-__exportStar(require("./entity/index"), exports);
+__exportStar(require("../../modules/user/factory/index"), exports);
+__exportStar(require("../../modules/user/entity/index"), exports);
 //# sourceMappingURL=index.js.map

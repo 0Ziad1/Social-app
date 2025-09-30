@@ -8,6 +8,7 @@ const otp_1 = require("../../utils/otp");
 const hashing_1 = require("../../utils/hashing");
 const dev_env_1 = require("../../config/dev.env");
 const auth_provider_1 = require("./providers/auth.provider");
+const token_1 = require("../../utils/token");
 class AuthService {
     userRepository = new user_1.UserRepository();
     authRepository = new user_2.AuthFactoryService();
@@ -44,7 +45,7 @@ class AuthService {
         });
         res.status(200).json({ message: "otp resent successfully" });
     };
-    login = async (req, res, next) => {
+    login = async (req, res) => {
         const loginDTO = req.body;
         const userExistance = await this.userRepository.exist({ email: loginDTO.email });
         if (!userExistance) {
@@ -57,9 +58,10 @@ class AuthService {
         if (userExistance.isVerified == false) {
             throw new error_1.BadRequestError("verify your account first");
         }
-        res.status(200).json({ message: "logged in successfully" });
+        const accessToken = (0, token_1.generateToken)({ id: userExistance._id, role: userExistance.role }, undefined, { expiresIn: 15 * 60 * 1000 });
+        res.status(200).json({ message: "logged in successfully", data: accessToken });
     };
-    verifyAccount = async (req, res, next) => {
+    verifyAccount = async (req, res) => {
         const verifyAccountDTO = req.body;
         const userExistance = await auth_provider_1.authProvider.checkOTP(verifyAccountDTO);
         this.userRepository.updated({ _id: userExistance._id }, {

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
-const enum_1 = require("../../utils/enum");
+const enum_1 = require("../../utils/common/enum");
 const dev_env_1 = require("../../config/dev.env");
 const mailer_1 = require("../../utils/mailer");
 const schema = new mongoose_1.Schema({
@@ -69,7 +69,7 @@ const schema = new mongoose_1.Schema({
         default: Date.now()
     },
 }, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
-schema.virtual("fullName").set(function () {
+schema.virtual("fullName").get(function () {
     return this.firstName + " " + this.lastName;
 });
 schema.pre("save", { document: true, query: false }, async function () {

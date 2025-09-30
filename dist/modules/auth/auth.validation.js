@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerSchema = void 0;
 const zod_1 = require("zod");
-const enum_1 = require("../../utils/enum");
+const enum_1 = require("../../utils/common/enum");
 exports.registerSchema = zod_1.z.object({
     firstName: zod_1.z.string().min(3).max(20).trim(),
     lastName: zod_1.z.string().min(3).max(20).trim(),
