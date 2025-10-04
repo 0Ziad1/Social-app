@@ -1,8 +1,6 @@
-import { ObjectId } from "mongoose";
-import { IComment, IPost, IUser } from "../../../utils/common/interface";
+import { IPost, IUser } from "../../../utils/common/interface";
 import { CreateCommentDTO } from "../comment.dto";
 import { Comment } from "../entity";
-import { log } from "node:console";
 
 export class CommentFactoryService{
     constructor(){};
@@ -10,13 +8,15 @@ export class CommentFactoryService{
         user:IUser,
         post:IPost,
         comment?:any
-    ){
+    ){        
         const newComment = new Comment();
         newComment.userId=user._id;
-        newComment.postId = post._id as ObjectId;
+        newComment.postId = post._id ||comment._postId;
         // newComment.attachments = createCommentDTO.attachment;
         newComment.content = createCommentDTO.content;
-        newComment.parentIds=comment?[...comment.parentIds,comment._id]:[];
+        newComment.parentId=comment?._id||undefined;
+        newComment.reactions=[];
+        newComment.mentions=[];
         return newComment;
     }
 }

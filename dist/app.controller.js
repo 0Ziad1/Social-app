@@ -8,11 +8,13 @@ const auth_controller_1 = __importDefault(require("./modules/auth/auth.controlle
 const connection_1 = require("./DB/connection");
 const user_controller_1 = __importDefault(require("./modules/user/user.controller"));
 const post_controller_1 = __importDefault(require("./modules/post/post.controller"));
+const comment_controller_1 = __importDefault(require("./modules/comment/comment.controller"));
 function bootstrap(app, express) {
     app.use(express.json());
     app.use("/auth", auth_controller_1.default);
     app.use("/user", user_controller_1.default);
     app.use("/post", post_controller_1.default);
+    app.use("/comment", comment_controller_1.default);
     app.use((error, req, res, next) => {
         if (!error) {
             next();

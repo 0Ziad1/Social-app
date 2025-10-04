@@ -43,7 +43,7 @@ export interface IPost {
 export interface IComment {
     userId: ObjectId;
     postId: ObjectId;
-    parentIds: ObjectId[];
+    parentId: ObjectId;
     content: string;
     attachments: IAttachments;
     reactions: IReactions;

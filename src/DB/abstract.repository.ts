@@ -14,7 +14,7 @@ export abstract class AbstractRepository<T> {
     async updated(filter: RootFilterQuery<T>, item: UpdateQuery<T>, options?:any) {
         await this.model.updateOne(filter, item, options);
     }
-    async delete(filter:RootFilterQuery<T>,options:MongooseBaseQueryOptions<T>){
+    async delete(filter:RootFilterQuery<T>,options?:MongooseBaseQueryOptions<T>){
         await this.model.deleteOne(filter,options);
     }
 }

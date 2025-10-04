@@ -34,7 +34,8 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
-const schema = new mongoose_1.Schema({
+const reaction_schema_1 = require("../common/reaction.schema");
+const commentSchema = new mongoose_1.Schema({
     userId: {
         type: mongoose_1.default.Types.ObjectId,
         required: true,
@@ -45,14 +46,29 @@ const schema = new mongoose_1.Schema({
         required: true,
         ref: "Post",
     },
-    parentIds: [{
-            type: mongoose_1.default.Types.ObjectId,
-            required: true,
-            ref: "Comment",
-        }],
+    parentId: {
+        type: mongoose_1.default.Types.ObjectId,
+        ref: "Comment",
+    },
     content: {
-        string: String,
-    }
+        type: String,
+    },
+    reactions: [{ type: reaction_schema_1.reactionSchema }]
+}, { timestamps: true, toObject: { virtuals: true }, toJSON: { virtuals: true } });
+commentSchema.virtual("replies", {
+    foreignField: "parentId",
+    localField: "_id",
+    ref: "Comment"
 });
-exports.default = schema;
+commentSchema.pre("deleteOne", async function (next) {
+    const filter = typeof this.getFilter == "function" ? this.getFilter() : {};
+    const replies = await this.model.find({ parentId: filter._id });
+    if (replies.length) {
+        for (const reply of replies) {
+            await this.model.deleteOne({ _id: reply._id });
+        }
+    }
+    next();
+});
+exports.default = commentSchema;
 //# sourceMappingURL=comment.schema.js.map

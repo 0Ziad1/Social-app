@@ -1,7 +1,8 @@
 import mongoose, { Schema } from "mongoose";
 import { IComment } from "../../utils/common/interface";
+import { reactionSchema } from "../common/reaction.schema";
 
-const schema = new Schema<IComment>({
+const commentSchema = new Schema<IComment>({
     userId: {
         type: mongoose.Types.ObjectId,
         required: true,
@@ -11,14 +12,32 @@ const schema = new Schema<IComment>({
         type: mongoose.Types.ObjectId,
         required: true,
         ref: "Post",
-    }, 
-    parentIds:[ {
+    },
+    parentId: {
         type: mongoose.Types.ObjectId,
-        required: true,
         ref: "Comment",
-    }],
+    },
     content: {
-        string: String,
+        type: String,
+    },
+    reactions: [{ type: reactionSchema }]
+
+}, { timestamps: true, toObject: { virtuals: true }, toJSON: { virtuals: true } })
+commentSchema.virtual("replies",
+    {
+        foreignField: "parentId",
+        localField: "_id",
+        ref: "Comment"
     }
+)
+commentSchema.pre("deleteOne", async function (next) {
+    const filter = typeof this.getFilter == "function" ? this.getFilter() : {};
+    const replies = await this.model.find({ parentId: filter._id });
+    if (replies.length) {
+        for (const reply of replies) {
+            await this.model.deleteOne({ _id: reply._id });
+        }
+    }
+    next();
 })
-export default schema;
+export default commentSchema;

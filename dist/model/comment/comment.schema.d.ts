@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import { IComment } from "../../utils/common/interface";
-declare const schema: mongoose.Schema<IComment, mongoose.Model<IComment, any, any, any, mongoose.Document<unknown, any, IComment, any, {}> & IComment & Required<{
+declare const commentSchema: mongoose.Schema<IComment, mongoose.Model<IComment, any, any, any, mongoose.Document<unknown, any, IComment, any, {}> & IComment & Required<{
     _id: Schema.Types.ObjectId;
 }> & {
     __v: number;
@@ -9,5 +9,5 @@ declare const schema: mongoose.Schema<IComment, mongoose.Model<IComment, any, an
 }> & {
     __v: number;
 }>;
-export default schema;
+export default commentSchema;
 //# sourceMappingURL=comment.schema.d.ts.map

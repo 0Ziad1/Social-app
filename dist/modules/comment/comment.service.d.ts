@@ -5,6 +5,9 @@ declare class CommentService {
     private readonly commentRepository;
     commentFactoryService: CommentFactoryService;
     createComment: (req: Request, res: Response) => Promise<void>;
+    getSpecific: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
+    deleteComment: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
+    addReaction: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
 }
 declare const _default: CommentService;
 export default _default;

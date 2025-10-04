@@ -2,15 +2,16 @@ import { Request, Response } from "express";
 import { PostRepository } from "../../model/post/post.repository";
 import { REACTION } from "../../utils/common/enum";
 import { IUser } from "../../utils/common/interface";
-import { NotFoundError } from "../../utils/error";
+import { AuthorityError, NotFoundError } from "../../utils/error";
 import { PostFactoryService } from "./factory";
 import { CreatePostDTO } from "./post.dto";
+import { addReactionProvider } from "../../utils/common/providers/reaction";
 
 class PostService {
     constructor() { };
     private readonly postFactoryService = new PostFactoryService();
     private readonly postRepository = new PostRepository();
-    createPost = (req: Request, res: Response) => {
+    public createPost = (req: Request, res: Response) => {
         //get data from body
         const createPostDTO: CreatePostDTO = req.body;
         const post = this.postFactoryService.createPost(createPostDTO, req.user as IUser);
@@ -22,41 +23,14 @@ class PostService {
                 data: { createdPost }
             });
     }
-    addReaction = async (req: Request, res: Response) => {
+    public addReaction = async (req: Request, res: Response) => {
         const { id } = req.params;
         const userId = req.user?._id;
         const { reaction } = req.body;
-        const postExistance = await this.postRepository.exist({ _id: id });
-        if (!postExistance) {
-            throw new NotFoundError("Post not found");
-        }
-        let userReacted = postExistance.reactions.findIndex((reaction) => {
-            return reaction.userId.toString() == userId?.toString();
-        })
-        if (userReacted == -1) {
-            await this.postRepository
-                .updated({ _id: id }
-                    , {
-                        $push: {
-                            reactions: {
-                                userId, reaction: ["", null, undefined]
-                                    .includes(reaction) ? REACTION.like : reaction
-                            }
-                        }
-                    });
-        }
-        else if (["", null, undefined].includes(reaction)) {
-            await this.postRepository.updated({ _id: id },
-                { $pull: { reactions: { reaction: postExistance.reactions[userReacted]?.reaction } } });
-        }
-        else {
-            await this.postRepository
-                .updated({ _id: id, 'reactions.userId': userId }
-                    , { 'reactions.$.reaction': reaction })
-        }
+        await addReactionProvider(this.postRepository, id as string, userId as unknown as string, reaction);
         return res.sendStatus(204);
     }
-    getSpecificPost = async (req: Request, res: Response) => {
+    public getSpecificPost = async (req: Request, res: Response) => {
         const { id } = req.params;
         const post = await this.postRepository.getOne({ _id: id },
             {},
@@ -64,7 +38,7 @@ class PostService {
                 populate: [
                     { path: "userId", select: "fullName firstName lastName" },
                     { path: "reactions.userId", select: "fullName firstName lastName" },
-                    { path: "comments", match: { parentIds: [] } }
+                    { path: "comments", match: { parentIds: null } }
                 ]
             }
         );
@@ -72,6 +46,15 @@ class PostService {
             throw new NotFoundError("Post not found");
         }
         return res.status(201).json({ post })
+    }
+    public deletePost = async (req: Request, res: Response) => {
+        const { id } = req.params;
+        const postExistance = await this.postRepository.exist({ _id: id });
+        if (!postExistance) throw new NotFoundError("Post not found");
+        if (postExistance.userId.toString() != req.user?._id.toString())
+            throw new AuthorityError("You are not the author of this post");
+        await this.postRepository.delete({ _id: id });
+        return res.status(200).json({ message: "post deleted successfully" });
     }
 }
 export default new PostService;

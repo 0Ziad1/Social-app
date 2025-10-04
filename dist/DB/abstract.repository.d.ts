@@ -24,6 +24,6 @@ export declare abstract class AbstractRepository<T> {
         __v: number;
     } : never : never)> | null>;
     updated(filter: RootFilterQuery<T>, item: UpdateQuery<T>, options?: any): Promise<void>;
-    delete(filter: RootFilterQuery<T>, options: MongooseBaseQueryOptions<T>): Promise<void>;
+    delete(filter: RootFilterQuery<T>, options?: MongooseBaseQueryOptions<T>): Promise<void>;
 }
 //# sourceMappingURL=abstract.repository.d.ts.map

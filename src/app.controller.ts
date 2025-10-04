@@ -4,11 +4,13 @@ import  { AppError } from "./utils/error/index"
 import { connectDB } from "./DB/connection";
 import userRouter from "./modules/user/user.controller"
 import postRouter from "./modules/post/post.controller"
+import commentRouter from "./modules/comment/comment.controller"
 export  function bootstrap(app:Express,express:any) {
     app.use(express.json());
     app.use("/auth",authRouter);
     app.use("/user",userRouter);
     app.use("/post",postRouter);
+    app.use("/comment",commentRouter)
     app.use((error:AppError,req:Request,res:Response,next:NextFunction)=>{
         if(!error){
             next();

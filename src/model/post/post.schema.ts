@@ -4,19 +4,9 @@ import { required } from "zod/mini";
 import { IPost } from "../../utils/common/interface";
 import { number } from "zod";
 import { REACTION } from "../../utils/common/enum";
-const reactionSchema = new Schema({
-    userId: {
-        type: Schema.Types.ObjectId,
-        ref: "User",
-        required: true,
-    },
-    reaction: {
-        type: Number,
-        enum: REACTION,
-        default: REACTION.like,
-    },
+import { reactionSchema } from "../common/reaction.schema";
+import Comment from "../comment/comment.model";
 
-})
 export const postSchema = new Schema<IPost>({
     userId: {
         type: Schema.Types.ObjectId,
@@ -38,4 +28,9 @@ postSchema.virtual("comments", {
     foreignField: "postId",
     ref: "Comment",
 
+})
+postSchema.pre("deleteOne", async function (next) {
+    const filter = typeof this.getFilter == "function" ? this.getFilter() : {};
+    await Comment.deleteMany({ postId: filter._id });
+    next();
 })

@@ -3,7 +3,7 @@ import { IAttachments, IReactions } from "../../../utils/common/interface";
 export declare class Comment {
     userId: ObjectId;
     postId: ObjectId;
-    parentIds: ObjectId[];
+    parentId: ObjectId | undefined;
     content: string;
     attachments: IAttachments;
     reactions: IReactions[];
