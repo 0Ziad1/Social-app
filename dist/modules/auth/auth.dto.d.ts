@@ -18,4 +18,8 @@ export interface VerifyAccountDTO {
     email: string;
     otp: string;
 }
+export interface LoginConfirmationDTO {
+    otp: string;
+    email: string;
+}
 //# sourceMappingURL=auth.dto.d.ts.map

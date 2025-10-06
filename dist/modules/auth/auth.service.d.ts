@@ -6,6 +6,7 @@ declare class AuthService {
     register: (req: Request, res: Response, next: NextFunction) => Promise<void>;
     resendOtp: (req: Request, res: Response, next: NextFunction) => Promise<void>;
     login: (req: Request, res: Response) => Promise<void>;
+    loginConfirmation: (req: Request, res: Response) => Promise<void>;
     verifyAccount: (req: Request, res: Response) => Promise<void>;
 }
 declare const _default: AuthService;

@@ -1,3 +1,4 @@
+import { ObjectId } from "mongoose";
 import { GENDER, SYS_ROLES, USER_AGENT } from "../../../utils/common/enum";
 export declare class User {
     firstName: string;
@@ -13,5 +14,7 @@ export declare class User {
     otp?: string;
     otpExpiryDate?: Date;
     isVerified: Boolean;
+    twoStepVerfication: Boolean;
+    _id: ObjectId;
 }
 //# sourceMappingURL=index.d.ts.map

@@ -68,6 +68,11 @@ const schema = new mongoose_1.Schema({
         type: Date,
         default: Date.now()
     },
+    twoStepVerfication: {
+        type: Boolean,
+        default: false,
+        required: true,
+    }
 }, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
 schema.virtual("fullName").get(function () {
     return this.firstName + " " + this.lastName;

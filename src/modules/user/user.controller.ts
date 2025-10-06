@@ -1,6 +1,11 @@
 import { Router } from "express";
+import { isAuthanticated } from "../../middleware/auth.middleware";
 import userService from "./user.service";
-import { isValid } from "zod/v3";
 const router = Router();
-router.get("/:id",userService.getProfile);
+router.get("/2FA/request", isAuthanticated(), userService.requestTwoStepVerfication);
+router.get("/:id", userService.getProfile);
+router.patch("/2FA/enable", isAuthanticated(), userService.enableTwoStepVerfication);
+router.patch("/update-password", userService.updatePassword);
+router.patch("/update-basic-info", isAuthanticated(), userService.updateBasicInfo);
+router.patch("/update-email", isAuthanticated(), userService.updateEmail);
 export default router;

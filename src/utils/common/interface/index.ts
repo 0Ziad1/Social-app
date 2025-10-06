@@ -18,6 +18,7 @@ export interface IUser {
     otpExpiryDate?:Date,
     isVerified:Boolean,
     _id:ObjectId;
+    twoStepVerfication:Boolean;
 }
 export interface IPayload extends JwtPayload{
   id:string,

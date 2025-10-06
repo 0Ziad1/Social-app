@@ -20,6 +20,7 @@ class AuthFactoryService {
         user.otpExpiryDate = (0, otp_1.generateExpiryDate)(15 * 60 * 1000);
         user.password = await (0, hashing_1.hashing)(registerDTO.password);
         user.isVerified = false;
+        user.twoStepVerfication = false;
         return user;
     }
 }

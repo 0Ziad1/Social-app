@@ -1,16 +1,13 @@
 import { NextFunction, Request, Response } from "express";
-import { LoginDTO, RegisterDTO, ResendOtpDTO, VerifyAccountDTO } from "./auth.dto";
-import User from "../../model/user/user.model";
+import { devConfig } from "../../config/dev.env";
+import { AuthFactoryService, UserRepository } from "../../model/user";
 import { AuthorityError, BadRequestError, ConflictError, NotFoundError } from "../../utils/error";
-import { UserRepository } from "../../model/user";
-import { AuthFactoryService } from "../../model/user";
+import { comparePassword } from "../../utils/hashing";
 import { sendEmail } from "../../utils/mailer";
 import { generateExpiryDate, generateOtp } from "../../utils/otp";
-import { comparePassword } from "../../utils/hashing";
-import *as authValidation from "./auth.validation"
-import { devConfig } from "../../config/dev.env";
-import { authProvider } from "./providers/auth.provider";
 import { generateToken } from "../../utils/token";
+import { LoginConfirmationDTO, LoginDTO, RegisterDTO, ResendOtpDTO, VerifyAccountDTO } from "./auth.dto";
+import { authProvider } from "./providers/auth.provider";
 import { email } from "zod";
 
 class AuthService {
@@ -63,8 +60,30 @@ class AuthService {
         if (userExistance.isVerified == false) {
             throw new BadRequestError("verify your account first")
         }
-       const accessToken =  generateToken({ id: userExistance._id,role:userExistance.role },undefined,{expiresIn:15*60*1000});
-        res.status(200).json({ message: "logged in successfully",data:accessToken });
+        if (userExistance.twoStepVerfication == true) {
+            const otp = generateOtp();
+            const otpExpiryDate = generateExpiryDate(15 * 60 * 1000);
+            await this.userRepository.updated({ email: userExistance.email }, { otp, otpExpiryDate })
+            await sendEmail(
+                {
+                    from: `'social-app' <${devConfig.EMAIL}>`,
+                    to: userExistance.email as string,
+                    subject: "Your otp is",
+                    html: `<h1>Your OTP is ${otp}</h1>`,
+                })
+            res.sendStatus(204);
+        }
+        const accessToken = generateToken({ id: userExistance._id, role: userExistance.role }, undefined, { expiresIn: 15 * 60 * 1000 });
+        res.status(200).json({ message: "logged in successfully", data: accessToken });
+    }
+    loginConfirmation = async (req: Request, res: Response) => {
+        const loginConfirmationDTO: LoginConfirmationDTO = req.body;
+        const user = await this.userRepository.exist({ email: req.user?.email });
+        if (user?.otp != loginConfirmationDTO.otp) throw new BadRequestError("Wrong otp");
+        if (user?.otpExpiryDate as any < Date.now()) throw new BadRequestError("Otp Expired");
+        const accessToken = generateToken({ id: req.user?._id, role: req.user?.role }
+            , undefined, { expiresIn: 15 * 60 * 1000 });
+        res.status(200).json({ message: "logged in successfully", data: accessToken });
     }
 
     verifyAccount = async (req: Request, res: Response) => {

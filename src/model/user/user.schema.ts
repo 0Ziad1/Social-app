@@ -67,19 +67,24 @@ const schema = new Schema<IUser>({
         type: Date,
         default: Date.now()
     },
+    twoStepVerfication: {
+        type: Boolean,
+        default: false,
+        required: true,
+    }
 
 }, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } })
 schema.virtual("fullName").get(function () {
     return this.firstName + " " + this.lastName;
 })
-schema.pre("save",{document:true,query:false} ,async function () {
-  if (this.isNew == true  && this.userAgent != USER_AGENT.google) {
-    await sendEmail({
-      from: `'social-app' <${devConfig.EMAIL}>`,
-      to: this.email as string,
-      subject: "Verify your account",
-      html: `<h1>Your OTP is ${this.otp}</h1>`,
-    });
-  }
+schema.pre("save", { document: true, query: false }, async function () {
+    if (this.isNew == true && this.userAgent != USER_AGENT.google) {
+        await sendEmail({
+            from: `'social-app' <${devConfig.EMAIL}>`,
+            to: this.email as string,
+            subject: "Verify your account",
+            html: `<h1>Your OTP is ${this.otp}</h1>`,
+        });
+    }
 })
 export default schema;

@@ -1,3 +1,4 @@
+import { ObjectId } from "mongoose";
 import { GENDER, SYS_ROLES, USER_AGENT } from "../../../utils/common/enum";
 
 export class User {
@@ -14,4 +15,6 @@ export class User {
     public otp?:string;
     public otpExpiryDate?:Date;
     public isVerified!:Boolean;
+    public twoStepVerfication!:Boolean;
+    public _id!:ObjectId;
 }

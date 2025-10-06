@@ -15,6 +15,8 @@ class User {
     otp;
     otpExpiryDate;
     isVerified;
+    twoStepVerfication;
+    _id;
 }
 exports.User = User;
 //# sourceMappingURL=index.js.map
