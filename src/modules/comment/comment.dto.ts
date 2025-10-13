@@ -6,3 +6,6 @@ export  interface CreateCommentDTO{
     //to do attachments
     // attachment:any;
 }
+export  interface UpdateCommentDTO{
+    content:string,
+}

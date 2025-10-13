@@ -17,4 +17,5 @@ export class User {
     public isVerified!:Boolean;
     public twoStepVerfication!:Boolean;
     public _id!:ObjectId;
+    public blockedUsers!:ObjectId[];
 }

@@ -8,6 +8,7 @@ declare class UserService {
     updatePassword: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
     updateEmail: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
     updateBasicInfo: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
+    blockUser: (req: Request, res: Response) => Promise<void>;
 }
 declare const _default: UserService;
 export default _default;

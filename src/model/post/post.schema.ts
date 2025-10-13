@@ -13,6 +13,10 @@ export const postSchema = new Schema<IPost>({
         required: true,
         ref: "User"
     },
+    frozen: {
+        type: Boolean,
+        default: false,
+    },
     content: {
         type: String,
         // required: function () {

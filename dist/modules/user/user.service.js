@@ -92,6 +92,16 @@ class UserService {
         await this.userRepo.updated({ _id: userId }, updateData);
         return res.status(200).json({ message: "Profile updated successfully" });
     };
+    blockUser = async (req, res) => {
+        const user = req.user;
+        const { id } = req.params;
+        const userExistance = await this.userRepo.exist({ _id: id });
+        if (!userExistance)
+            throw new error_1.NotFoundError("User not found");
+        user?.blockedUsers.push("68ed413247d1091d97a0c1cb");
+        await this.userRepo.updated({ _id: user?._id }, { $push: { blockedUsers: id } });
+        res.status(200).json({ message: "User blocked successfully" });
+    };
 }
 exports.default = new UserService;
 //# sourceMappingURL=user.service.js.map

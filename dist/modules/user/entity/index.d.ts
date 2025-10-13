@@ -16,5 +16,6 @@ export declare class User {
     isVerified: Boolean;
     twoStepVerfication: Boolean;
     _id: ObjectId;
+    blockedUsers: ObjectId[];
 }
 //# sourceMappingURL=index.d.ts.map

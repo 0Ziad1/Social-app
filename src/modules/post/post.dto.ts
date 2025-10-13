@@ -5,3 +5,6 @@ export   interface CreatePostDTO{
     reactions:IReactions[],
     content:string,
 }
+export interface UpdatePostDTO{
+    content:string;
+}

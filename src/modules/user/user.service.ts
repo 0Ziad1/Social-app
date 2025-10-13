@@ -6,6 +6,7 @@ import { sendEmail } from "../../utils/mailer";
 import { devConfig } from "../../config/dev.env";
 import { generateExpiryDate, generateOtp } from "../../utils/otp";
 import { comparePassword, hashing } from "../../utils/hashing";
+import { ObjectId } from "mongoose";
 class UserService {
     private userRepo = new UserRepository();
     constructor() { };
@@ -52,12 +53,12 @@ class UserService {
         if (!userExistance) throw new NotFoundError("User not found");
         const match = await comparePassword(updatePassowordDTO.password, userExistance.password);
         if (!match) throw new AuthorityError("invalid credintials");
-        const updatedPassword =await hashing(updatePassowordDTO.newPassword)
+        const updatedPassword = await hashing(updatePassowordDTO.newPassword)
         await this.userRepo.updated({ email: updatePassowordDTO.email }
             , { password: updatedPassword });
         return res.status(200).json({ message: "Password updated" });
     }
-        public updateEmail = async (req: Request, res: Response) => {
+    public updateEmail = async (req: Request, res: Response) => {
         const userId = req.user?._id;
         const { newEmail } = req.body;
 
@@ -77,7 +78,7 @@ class UserService {
 
         return res.status(200).json({ message: "Email updated successfully" });
     };
-     public updateBasicInfo = async (req: Request, res: Response) => {
+    public updateBasicInfo = async (req: Request, res: Response) => {
         const userId = req.user?._id;
         const { firstName, lastName, gender, bio } = req.body;
 
@@ -94,6 +95,18 @@ class UserService {
 
         return res.status(200).json({ message: "Profile updated successfully" });
     };
+    public blockUser = async (req: Request, res: Response) => {
+        const user = req.user;
+        const { id } = req.params;
+        const userExistance = await this.userRepo.exist({ _id: id });
+        if (!userExistance) throw new NotFoundError("User not found");
+        user?.blockedUsers.push("68ed413247d1091d97a0c1cb" as unknown as ObjectId);
+        await this.userRepo.updated(
+            { _id: user?._id },
+            { $push: { blockedUsers: id } }
+        );
+        res.status(200).json({ message: "User blocked successfully" });
+    }
 }
 
 

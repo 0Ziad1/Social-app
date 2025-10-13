@@ -1,4 +1,4 @@
-import { Schema } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import { IUser } from "../../utils/common/interface";
 import { GENDER, SYS_ROLES, USER_AGENT } from "../../utils/common/enum";
 import { devConfig } from "../../config/dev.env";
@@ -71,7 +71,10 @@ const schema = new Schema<IUser>({
         type: Boolean,
         default: false,
         required: true,
-    }
+    },
+    blockedUsers:[{
+        type:mongoose.Types.ObjectId,
+    }]
 
 }, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } })
 schema.virtual("fullName").get(function () {

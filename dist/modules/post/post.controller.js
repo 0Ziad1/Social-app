@@ -13,5 +13,6 @@ router.post("/create-post", (0, auth_middleware_1.isAuthanticated)(), post_servi
 router.patch("/:id", (0, auth_middleware_1.isAuthanticated)(), post_service_1.default.addReaction);
 router.get("/:id", post_service_1.default.getSpecificPost);
 router.delete("/:id", (0, auth_middleware_1.isAuthanticated)(), post_service_1.default.deletePost);
+router.patch("/update-post/:id", (0, auth_middleware_1.isAuthanticated)(), post_service_1.default.updatePost);
 exports.default = router;
 //# sourceMappingURL=post.controller.js.map

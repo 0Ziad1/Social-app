@@ -17,6 +17,7 @@ class User {
     isVerified;
     twoStepVerfication;
     _id;
+    blockedUsers;
 }
 exports.User = User;
 //# sourceMappingURL=index.js.map

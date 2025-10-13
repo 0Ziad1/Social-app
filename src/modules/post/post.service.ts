@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
+import { ObjectId } from "mongoose";
 import { PostRepository } from "../../model/post/post.repository";
-import { REACTION } from "../../utils/common/enum";
 import { IUser } from "../../utils/common/interface";
+import { addReactionProvider } from "../../utils/common/providers/reaction";
 import { AuthorityError, NotFoundError } from "../../utils/error";
 import { PostFactoryService } from "./factory";
-import { CreatePostDTO } from "./post.dto";
-import { addReactionProvider } from "../../utils/common/providers/reaction";
+import { CreatePostDTO, UpdatePostDTO } from "./post.dto";
 
 class PostService {
     constructor() { };
@@ -55,6 +55,40 @@ class PostService {
             throw new AuthorityError("You are not the author of this post");
         await this.postRepository.delete({ _id: id });
         return res.status(200).json({ message: "post deleted successfully" });
+    }
+    public freezePost = async (req: Request, res: Response) => {
+        const userId = req.user?._id;
+        const { id } = req.params;
+        const post = await this.postRepository.exist({ _id: id });
+        if (!post) throw new NotFoundError("Post not found");
+        if (post?.userId.toString() != (userId as ObjectId).toString())
+            throw new AuthorityError("You are not the owner of this Post to freeze it");
+        let reversed;
+        if (post.frozen == true) { reversed = false }
+        else reversed = true
+        await this.postRepository.updated({ _id: id, userId }, { frozen: reversed });
+        return res.sendStatus(204);
+    }
+    public hardDeletePost = async (req: Request, res: Response) => {
+        const userId = req.user?._id;
+        const { id } = req.params;
+        const post = await this.postRepository.exist({ _id: id });
+        if (!post) throw new NotFoundError("Post not found");
+        if (post?.userId.toString() != (userId as ObjectId).toString())
+            throw new AuthorityError("You are not the owner of this Post to delete it");
+        await this.postRepository.delete({ _id: id });
+        return res.status(200).json({ Message: "Post deleted successfully" });
+    }
+    public updatePost = async (req: Request, res: Response) => {
+        const userId = req.user?._id;
+        const { id } = req.params;
+        const updatePostDTO: UpdatePostDTO = req.body;
+        const post = await this.postRepository.exist({ _id: id });
+        if (!post) throw new NotFoundError("Post not found");
+        if (post?.userId.toString() != (userId as ObjectId).toString())
+            throw new AuthorityError("You are not the owner of this Post to update it");
+        await this.postRepository.updated({ _id: id }, { content: updatePostDTO.content });
+        res.sendStatus(204);
     }
 }
 export default new PostService;

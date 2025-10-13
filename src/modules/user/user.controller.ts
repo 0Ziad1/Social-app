@@ -8,4 +8,5 @@ router.patch("/2FA/enable", isAuthanticated(), userService.enableTwoStepVerficat
 router.patch("/update-password", userService.updatePassword);
 router.patch("/update-basic-info", isAuthanticated(), userService.updateBasicInfo);
 router.patch("/update-email", isAuthanticated(), userService.updateEmail);
+router.post("/block-user/:id", isAuthanticated(), userService.blockUser);
 export default router;

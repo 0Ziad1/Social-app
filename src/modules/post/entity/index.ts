@@ -5,5 +5,6 @@ class Post {
     reactions!:IReactions[];
     // attachments?:IAttachments;
     content!:string;
+    frozen: boolean= false;
 }
 export default Post

@@ -20,6 +20,10 @@ const commentSchema = new Schema<IComment>({
     content: {
         type: String,
     },
+    frozen:{
+        type:Boolean,
+        default:false,
+    },
     reactions: [{ type: reactionSchema }]
 
 }, { timestamps: true, toObject: { virtuals: true }, toJSON: { virtuals: true } })

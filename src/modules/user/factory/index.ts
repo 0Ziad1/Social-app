@@ -20,6 +20,7 @@ export class AuthFactoryService {
         user.password = await hashing(registerDTO.password);
         user.isVerified = false;
         user.twoStepVerfication = false;
+        user.blockedUsers = [];
         return user;
     }
 }

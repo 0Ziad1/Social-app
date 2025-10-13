@@ -21,6 +21,7 @@ class AuthFactoryService {
         user.password = await (0, hashing_1.hashing)(registerDTO.password);
         user.isVerified = false;
         user.twoStepVerfication = false;
+        user.blockedUsers = [];
         return user;
     }
 }

@@ -5,6 +5,7 @@ class Post {
     reactions;
     // attachments?:IAttachments;
     content;
+    frozen = false;
 }
 exports.default = Post;
 //# sourceMappingURL=index.js.map

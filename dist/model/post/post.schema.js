@@ -13,6 +13,10 @@ exports.postSchema = new mongoose_1.Schema({
         required: true,
         ref: "User"
     },
+    frozen: {
+        type: Boolean,
+        default: false,
+    },
     content: {
         type: String,
         // required: function () {

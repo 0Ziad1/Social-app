@@ -17,6 +17,7 @@ export interface IUser {
     isVerified: Boolean;
     _id: ObjectId;
     twoStepVerfication: Boolean;
+    blockedUsers: ObjectId[];
 }
 export interface IPayload extends JwtPayload {
     id: string;
@@ -40,6 +41,7 @@ export interface IPost {
     content: string;
     _id?: ObjectId;
     reactions: IReactions[];
+    frozen: Boolean;
 }
 export interface IComment {
     userId: ObjectId;
@@ -50,5 +52,6 @@ export interface IComment {
     reactions: IReactions;
     mentions: ObjectId[];
     _id: ObjectId;
+    frozen: Boolean;
 }
 //# sourceMappingURL=index.d.ts.map

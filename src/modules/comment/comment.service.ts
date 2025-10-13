@@ -3,11 +3,13 @@ import { Request, Response } from "express";
 import { AuthorityError, NotFoundError } from "../../utils/error";
 import { PostRepository } from "../../model/post/post.repository";
 import CommentRepository from "../../model/comment/comment.repository";
-import { CreateCommentDTO } from "./comment.dto";
+import { CreateCommentDTO, UpdateCommentDTO } from "./comment.dto";
 import { CommentFactoryService } from "./factory";
 import { IComment, IPost, IUser } from "../../utils/common/interface";
 import { threadId } from "worker_threads";
 import { addReactionProvider } from "../../utils/common/providers/reaction";
+import { send } from "process";
+import { ObjectId } from "mongoose";
 
 class CommentService {
     private readonly postRepository = new PostRepository;
@@ -32,7 +34,7 @@ class CommentService {
 
         res.status(201).json({ createdComment })
     }
-    public getSpecific = async (req: Request, res: Response) => {
+    public getCommentWithReply = async (req: Request, res: Response) => {
         const { id } = req.params;
         const commentExistance = await this.commentRepository.exist({ _id: id }, {}, { populate: { path: "replies" } });
         if (!commentExistance) throw new NotFoundError("Comment not found");
@@ -58,5 +60,46 @@ class CommentService {
         await addReactionProvider(this.commentRepository, id as string, userId as unknown as string, reaction);
         return res.sendStatus(204);
     }
+    public freezeComment = async (req: Request, res: Response) => {
+        const userId = req.user?._id;
+        const { id } = req.params;
+        const comment = await this.commentRepository.exist({ _id: id });
+        if (!comment) throw new NotFoundError("Comment not found");
+        if (comment?.userId.toString() != (userId as ObjectId).toString())
+            throw new AuthorityError("You are not the owner of this comment to freeze it");
+        let reversed;
+        if (comment.frozen == true) { reversed = false }
+        else reversed = true
+        await this.commentRepository.updated({ _id: id, userId }, { frozen: reversed });
+        return res.sendStatus(204);
+    }
+    public hardDeleteComment = async (req: Request, res: Response) => {
+        const userId = req.user?._id;
+        const { id } = req.params;
+        const comment = await this.commentRepository.exist({ _id: id });
+        if (!comment) throw new NotFoundError("Comment not found");
+        if (comment?.userId.toString() != (userId as ObjectId).toString())
+            throw new AuthorityError("You are not the owner of this comment to delete it");
+        await this.commentRepository.delete({ _id: id });
+        return res.status(200).json({ Message: "Comment deleted successfully" });
+    }
+    public updateComment = async (req: Request, res: Response) => {
+        const userId = req.user?._id;
+        const { id } = req.params;
+        const updateCommentDTO: UpdateCommentDTO = req.body;
+        const comment = await this.commentRepository.exist({ _id: id });
+        if (!comment) throw new NotFoundError("Comment not found");
+        if (comment?.userId.toString() != (userId as ObjectId).toString())
+            throw new AuthorityError("You are not the owner of this comment to update it");
+        await this.commentRepository.updated({ _id: id }, { content: updateCommentDTO.content });
+        res.sendStatus(204);
+    }
+    public getCommentById = async(req: Request, res: Response) => {
+         const { id } = req.params;
+        const commentExistance = await this.commentRepository.exist({ _id: id }, {});
+        if (!commentExistance) throw new NotFoundError("Comment not found");
+        return res.status(200).json({ comment:commentExistance })
+    }
+
 }
 export default new CommentService;

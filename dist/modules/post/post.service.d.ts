@@ -7,6 +7,9 @@ declare class PostService {
     addReaction: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
     getSpecificPost: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
     deletePost: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
+    freezePost: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
+    hardDeletePost: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
+    updatePost: (req: Request, res: Response) => Promise<void>;
 }
 declare const _default: PostService;
 export default _default;

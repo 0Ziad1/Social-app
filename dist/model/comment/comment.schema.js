@@ -53,6 +53,10 @@ const commentSchema = new mongoose_1.Schema({
     content: {
         type: String,
     },
+    frozen: {
+        type: Boolean,
+        default: false,
+    },
     reactions: [{ type: reaction_schema_1.reactionSchema }]
 }, { timestamps: true, toObject: { virtuals: true }, toJSON: { virtuals: true } });
 commentSchema.virtual("replies", {
